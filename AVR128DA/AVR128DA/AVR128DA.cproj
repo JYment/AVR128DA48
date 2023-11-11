@@ -153,6 +153,9 @@
     <Compile Include="src\common\include\cli.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\common\include\i2c.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\common\include\led.h">
       <SubType>compile</SubType>
     </Compile>
@@ -160,6 +163,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\hw\driver\cli.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\hw\driver\i2c.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\hw\driver\led.c">

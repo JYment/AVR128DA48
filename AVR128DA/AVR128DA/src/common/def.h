@@ -22,6 +22,7 @@
 
 #define _DEF_UART1			0
 
+#define _DEF_I2C1			0
 
 #define _DEF_LOW			0
 #define _DEF_HIGH			1

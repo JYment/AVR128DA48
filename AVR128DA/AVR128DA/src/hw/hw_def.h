@@ -29,4 +29,8 @@
 #define		HW_CLI_LINE_HIS_MAX		4
 #define		HW_CLI_LINE_BUF_MAX		48
 
+
+#define _USE_HW_I2C
+#define		HW_I2C_MAX_CH			1
+
 #endif /* HW_DEF_H_ */
