@@ -28,8 +28,8 @@ bool bspInit(void)
 	RTC.CLKSEL = (0x02 << RTC_CLKSEL_gp);
 		
 	CCP = CCP_IOREG_gc;
-	CLKCTRL.OSCHFCTRLA = (0x09 << CLKCTRL_FREQSEL_gp)
-	| (0x01 << CLKCTRL_AUTOTUNE_bp);
+	CLKCTRL.OSCHFCTRLA = (0x09 << CLKCTRL_FREQSEL_gp)     // OSCHF = 24Mhz
+					   | (0x01 << CLKCTRL_AUTOTUNE_bp);   // AUTOTUNE Enable
 		
 	CCP = CCP_IOREG_gc;
 	CLKCTRL.MCLKCTRLA = (0x00 << CLKCTRL_CLKSEL_gp);
@@ -41,7 +41,7 @@ bool bspInit(void)
 	TCB0.CTRLA = (0x00 << TCB_CLKSEL_gp);
 	TCB0.CTRLB = (0x00 << TCB_CNTMODE_gp);
 	TCB0.INTCTRL = (1 << TCB_CAPT_bp);
-	TCB0.CCMP = (1000 * (24000000 / 1000000)) - 1;
+	TCB0.CCMP = (1000 * (F_CPU / 1000000)) - 1;
 	TCB0.CTRLA |= (1 << TCB_ENABLE_bp);
 		
 	PORTC.DIRSET = (1 << 6);

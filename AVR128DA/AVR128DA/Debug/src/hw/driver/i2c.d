@@ -1,5 +1,5 @@
-src/ap/ap.d src/ap/ap.o: ../src/ap/ap.c ../src/ap/ap.h ../src/hw/hw.h \
- ../src/hw/hw_def.h ../src/common/def.h \
+src/hw/driver/i2c.d src/hw/driver/i2c.o: ../src/hw/driver/i2c.c \
+ ../src/common/include/i2c.h ../src/hw/hw_def.h ../src/common/def.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdio.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\inttypes.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdint.h \
@@ -24,13 +24,9 @@ src/ap/ap.d src/ap/ap.o: ../src/ap/ap.c ../src/ap/ap.h ../src/hw/hw.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\pgmspace.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\eeprom.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\power.h \
- ../src/common/include/led.h ../src/hw/hw_def.h \
- ../src/common/include/uart.h ../src/common/include/cli.h \
- ../src/common/include/i2c.h
+ ../src/common/include/cli.h
 
-../src/ap/ap.h:
-
-../src/hw/hw.h:
+../src/common/include/i2c.h:
 
 ../src/hw/hw_def.h:
 
@@ -84,12 +80,4 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\power.h:
 
-../src/common/include/led.h:
-
-../src/hw/hw_def.h:
-
-../src/common/include/uart.h:
-
 ../src/common/include/cli.h:
-
-../src/common/include/i2c.h:

@@ -12,7 +12,6 @@
 #include "def.h"
 #include "bsp.h"
 
-#define F_CPU		24000000UL
 
 #define _DEF_FIRMWARE_VERSION		"V231111R1"
 #define _DEF_BOARD_NAME				"AVR128DA48"

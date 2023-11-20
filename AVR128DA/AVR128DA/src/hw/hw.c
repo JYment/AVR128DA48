@@ -15,6 +15,7 @@ bool hwInit(void)
 	ledInit();
 	uartInit();
 	cliInit();
+	i2cInit();
 	
 	return true;
 }

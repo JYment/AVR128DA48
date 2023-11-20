@@ -25,7 +25,8 @@ src/main.d src/main.o: ../src/main.c ../src/main.h ../src/hw/hw.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\eeprom.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\power.h \
  ../src/common/include/led.h ../src/hw/hw_def.h \
- ../src/common/include/uart.h ../src/common/include/cli.h ../src/ap/ap.h
+ ../src/common/include/uart.h ../src/common/include/cli.h \
+ ../src/common/include/i2c.h ../src/ap/ap.h
 
 ../src/main.h:
 
@@ -90,5 +91,7 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 ../src/common/include/uart.h:
 
 ../src/common/include/cli.h:
+
+../src/common/include/i2c.h:
 
 ../src/ap/ap.h:

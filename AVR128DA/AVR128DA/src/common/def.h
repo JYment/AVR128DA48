@@ -17,6 +17,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+
+#define F_CPU		24000000UL
+
+
 #define _DEF_LED1			0
 #define _DEF_LED2			1
 
