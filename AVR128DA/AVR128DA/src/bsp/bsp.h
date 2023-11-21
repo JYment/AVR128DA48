@@ -20,6 +20,7 @@
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 #include <avr/power.h>
+#include <util/delay.h>
 
 
 

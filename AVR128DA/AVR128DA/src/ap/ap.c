@@ -7,7 +7,15 @@
 
 #include "ap.h"
 
-
+void ssd1306_command(uint8_t c)
+{
+	uint8_t control = 0x00;
+	i2cStart(_DEF_I2C1);
+	i2cSendAddr(_DEF_I2C1, 0x3C << 1);
+	i2cSendData(_DEF_I2C1, control);
+	i2cSendData(_DEF_I2C1, c);
+	i2cEnd(_DEF_I2C1);
+}
 
 void apInit(void)
 {
@@ -19,21 +27,40 @@ void apMain(void)
 {
 	uint32_t preTime;
 	
+	ssd1306_command(0xAE);
+	ssd1306_command(0xD5);
+	ssd1306_command(0x80);
+	ssd1306_command(0xA8);
+	ssd1306_command(32 - 1);
+	ssd1306_command(0xD3);
+	ssd1306_command(0x0);
+	ssd1306_command(0x40 | 0x0);	
+	ssd1306_command(0x8D);	
+	ssd1306_command(0x14);		//external vcc
+	ssd1306_command(0x20);	
+	ssd1306_command(0x0);	
+	ssd1306_command(0xA0 | 0x1);	
+	ssd1306_command(0xC8);	
+	ssd1306_command(0xDA);	
+	ssd1306_command(0x02);	
+	ssd1306_command(0x81);	
+	ssd1306_command(0x8F);	
+	ssd1306_command(0xD9);	
+	ssd1306_command(0xF1);		//external vcc
+	ssd1306_command(0xDB);	
+	ssd1306_command(0x40);	
+	ssd1306_command(0xA4);	
+	ssd1306_command(0xA6);
+	ssd1306_command(0x2E);	
+	ssd1306_command(0xAF);
+	
+	
+	ssd1306_command(0x8D);
+	ssd1306_command(0x14);		//external vcc
+	ssd1306_command(0xA5);
+	ssd1306_command(0xAF);
+	
 	preTime = millis();
-
-	uint8_t cmd_buf[2];
-	uint8_t cmd;
-	
-	cmd_buf[0] = 0x8D;		// charge pump
-	cmd_buf[1] = 0x10 | (1 ? 4 : 0);
-	i2cWriteBytes(_DEF_I2C1, 0x3C, 0, cmd_buf, 2, 100);
-	
-	cmd = 0xA5;		// entire on
-	i2cWriteData(_DEF_I2C1, 0x3C, &cmd, 1, 100);
-	
-	cmd = 0xAF;		// display on
- 	i2cWriteData(_DEF_I2C1, 0x3C, &cmd, 1, 100);
-	
 	while (1)
 	{
 		if(millis() - preTime >= 100)

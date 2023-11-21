@@ -16,35 +16,32 @@ void cliI2c(cli_args_t *args);
 
 bool i2cInit(void)
 {
-	PORTA.PIN2CTRL = PORT_PULLUPEN_bm;
-	PORTA.PIN3CTRL = PORT_PULLUPEN_bm;
 	PORTA.DIRSET = (1 << 2) | (1 << 3);
+	PORTA.OUTCLR = (1 << 2) | (1 << 3);
+	PORTMUX.TWIROUTEA = 0x00;	
+
 	cliAdd("i2c", cliI2c);
 	
 	return true;
 }
 
-bool i2cIsInit(void)
-{
-	
-}
 
 bool i2cBegin(uint8_t ch, uint32_t freq_khz)
 {
 	switch(ch)
 	{
 		case _DEF_I2C1:
-		TWI0.MBAUD = (uint8_t)BAUD(freq_khz, 0); /* set MBAUD register */
-		TWI0.MCTRLA = 1 << TWI_ENABLE_bp        /* Enable TWI Master: enabled */
+		TWI0.MBAUD  = (uint8_t)BAUD(freq_khz, 0); /* set MBAUD register */
+ 		TWI0.MCTRLA = 1 << TWI_ENABLE_bp        /* Enable TWI Master: enabled */
 					| 0 << TWI_QCEN_bp			/* Quick Command Enable: disabled */
 					| 0 << TWI_RIEN_bp			/* Read Interrupt Enable: disabled */
 					| 0 << TWI_SMEN_bp			/* Smart Mode Enable: disabled */
 					| TWI_TIMEOUT_DISABLED_gc	/* Bus Timeout Disabled */
-					| 0 << TWI_WIEN_bp;			/* Write Interrupt Enable: disabled */
-					
-		TWI0.MCTRLB  |= TWI_FLUSH_bm;
+					| 0 << TWI_WIEN_bp;			/* Write Interrupt Enable: disabled */
+
+ 		TWI0.MCTRLB  |= TWI_FLUSH_bm;
 		TWI0.MSTATUS |= TWI_BUSSTATE_IDLE_gc;
-		TWI0.MSTATUS |= (TWI_RIF_bm | TWI_WIF_bm);
+		TWI0.MSTATUS |= (TWI_RIF_bm | TWI_WIF_bm);
 		break;
 	}
 	
@@ -53,119 +50,151 @@ bool i2cBegin(uint8_t ch, uint32_t freq_khz)
 
 bool i2cStart(uint8_t ch)
 {
+	uint32_t pre_time = 0;
+	uint8_t  timeout  = 10;
 	switch(ch)
 	{
 		case _DEF_I2C1:
-		TWI0.MCTRLB  |= TWI_FLUSH_bm;
+		TWI0.MCTRLB   = TWI_FLUSH_bm;
 		TWI0.MSTATUS |= TWI_BUSSTATE_IDLE_gc;
-		TWI0.MSTATUS |= (TWI_RIF_bm | TWI_WIF_bm);
+		
+		pre_time = millis();
+		while(1)
+		{
+			if((TWI0.MSTATUS & TWI_BUSSTATE_BUSY_gc) != TWI_BUSSTATE_BUSY_gc)
+			{
+				break;
+			}
+			if(millis() - pre_time >= timeout)
+			{
+				return false;
+			}
+		}	
 		break;
 	}
 	
 	return true;
 }
  
-// void i2cReset(uint8_t ch);
+bool i2cSendAddr(uint8_t ch, uint8_t dev_addr)
+{
+	bool     ret      = false;
+	uint32_t pre_time = 0;
+	uint8_t  timeout  = 10;
+	
+	switch(ch)
+	{
+		case _DEF_I2C1:
+		TWI0.MSTATUS |= (TWI_RIF_bm | TWI_WIF_bm);
+		TWI0.MADDR = dev_addr;
+		
+		pre_time = millis();
+		while (!(TWI0.MSTATUS & TWI_RIF_bm) && !(TWI0.MSTATUS & TWI_WIF_bm))
+		{
+			if(millis() - pre_time >= timeout)
+			{
+				return false;
+			}
+		}
+		
+		if(!(TWI0.MSTATUS & TWI_RXACK_bm))
+		{
+			ret = true;
+		}
+		
+		break;
+	}
+	
+	return ret;
+}
+
+bool i2cSendData(uint8_t ch, uint8_t data)
+{
+	bool     ret      = false;
+	uint32_t pre_time = 0;
+	uint8_t  timeout  = 10;
+	
+	switch(ch)
+	{
+		case _DEF_I2C1:
+		TWI0.MSTATUS |= (TWI_RIF_bm | TWI_WIF_bm);
+		TWI0.MDATA = data;
+		
+		pre_time = millis();
+		while (!(TWI0.MSTATUS & TWI_WIF_bm))
+		{
+			if(millis() - pre_time >= timeout)
+			{
+				return false;
+			}
+		}
+		
+		if(!(TWI0.MSTATUS & TWI_RXACK_bm))
+		{
+			ret = true;
+		}
+		
+		break;
+	}
+	
+	return ret;
+}
+ 
 bool i2cIsDeviceReady(uint8_t ch, uint8_t dev_addr)
 {
 	
 	switch(ch)
 	{
 		case _DEF_I2C1:
-		TWI0.MSTATUS |= (TWI_RIF_bm | TWI_WIF_bm);
-		TWI0.MADDR    = dev_addr << 1;
-		while (!(TWI0.MSTATUS & TWI_RIF_bm) && !(TWI0.MSTATUS & TWI_WIF_bm));
-		if(!(TWI0.MSTATUS & TWI_RXACK_bm))
-			return true;
-		break;
-	}
-	
-	return false;
-}
-
-// bool i2cRecovery(uint8_t ch);
-// bool i2cReadByte (uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p_data, uint32_t timeout);
-// bool i2cReadBytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p_data, uint32_t length, uint32_t timeout);
-// bool i2cReadA16Bytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p_data, uint32_t length, uint32_t timeout);
-// 
-bool i2cWriteByte (uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t data, uint32_t timeout)
-{
-	switch(ch)
-	{
-		case _DEF_I2C1:
-		i2cStart(ch);
-		i2cIsDeviceReady(ch, dev_addr);
-		
-		TWI0.MSTATUS |= (TWI_RIF_bm | TWI_WIF_bm);	
-		TWI0.MDATA = reg_addr;
-		while ((TWI0.MSTATUS & TWI_WIF_bm) == 0);
-		if(TWI0.MSTATUS & TWI_RXACK_bm)
+		if(i2cStart(ch) != true)
+		{
 			return false;
-			
-		TWI0.MSTATUS |= (TWI_RIF_bm | TWI_WIF_bm);
-		TWI0.MDATA = data;
-		while ((TWI0.MSTATUS & TWI_WIF_bm) == 0);
-		if(TWI0.MSTATUS & TWI_RXACK_bm)
-			return false;
+		}
 		
-		i2cEnd(ch);
+		if(i2cSendAddr(ch, (dev_addr << 1)) != true)
+		{
+			return false;
+		}
+		
+		if(i2cEnd(ch) != true)
+		{
+			return false;
+		}
 		break;
 	}
 	
 	return true;
 }
-bool i2cWriteBytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p_data, uint32_t length, uint32_t timeout)
-{
-	switch(ch)
-	{
-		case _DEF_I2C1:
-		
-		i2cStart(ch);
-		i2cIsDeviceReady(ch, dev_addr);
-		
-		TWI0.MSTATUS |= (TWI_RIF_bm | TWI_WIF_bm);
-		TWI0.MDATA = reg_addr;
-		while (!(TWI0.MSTATUS & TWI_WIF_bm));
-		if(TWI0.MSTATUS & TWI_RXACK_bm)
-		return false;
-		
-		while(length--)
-		{
-			TWI0.MSTATUS |= (TWI_RIF_bm | TWI_WIF_bm);
-			TWI0.MDATA = *p_data;
-			while ((TWI0.MSTATUS & TWI_WIF_bm) == 0);
-			if(TWI0.MSTATUS & TWI_RXACK_bm)
-				return false;	
-				
-			p_data++;
-		}
-		
-		
-		i2cEnd(ch);
-		break;
-	}
-}
-// bool i2cWriteA16Bytes(uint8_t ch, uint16_t dev_addr, uint16_t reg_addr, uint8_t *p_data, uint32_t length, uint32_t timeout);
-// 
-// bool i2cReadData(uint8_t ch, uint16_t dev_addr, uint8_t *p_data, uint32_t length, uint32_t timeout);
+
 
 bool i2cWriteData(uint8_t ch, uint16_t dev_addr, uint8_t *p_data, uint32_t length, uint32_t timeout)
 {
+	bool ret = false;
+	
 	switch(ch)
 	{
 		case _DEF_I2C1:
-		i2cStart(ch);
-		i2cIsDeviceReady(ch, dev_addr);
-			
-		while(length--)
+		if(i2cStart(ch) != true)
 		{
-			TWI0.MDATA = *p_data;
-			while ((TWI0.MSTATUS & TWI_WIF_bm) == 0);
-			if(TWI0.MSTATUS & TWI_RXACK_bm)
-				return false;
-			*p_data++;
+			return false;
 		}
 		
+		if(i2cSendAddr(ch, (dev_addr << 1)) != true)
+		{
+			return false;
+		}
+		
+		while(length--)
+		{
+			if(i2cSendData(ch, *p_data) != true)
+			{
+				i2cEnd(ch);
+				return false;
+			}
+			p_data++;
+		}
+		
+		i2cEnd(ch);
 		break;
 	}
 	
@@ -174,12 +203,31 @@ bool i2cWriteData(uint8_t ch, uint16_t dev_addr, uint8_t *p_data, uint32_t lengt
 
 bool i2cEnd(uint8_t ch)
 {
+	uint32_t pre_time = 0;
+	uint8_t  timeout  = 10;
+	
 	switch(ch)
 	{
 		case _DEF_I2C1:
-		TWI0.MCTRLB = TWI_MCMD_STOP_gc;
+		TWI0.MCTRLB &= 0xFC;
+		TWI0.MCTRLB |= TWI_MCMD_STOP_gc;
+		
+		pre_time = millis();
+		while(1)
+		{
+			if((TWI0.MSTATUS & TWI_BUSSTATE_BUSY_gc) != TWI_BUSSTATE_BUSY_gc)
+			{
+				break;
+			}
+			if(millis() - pre_time >= timeout)
+			{
+				return false;
+			}
+		}
 		break;
 	}
+	
+	return true;
 }
 
 
@@ -207,3 +255,6 @@ void cliI2c(cli_args_t *args)
 		cliPrintf_P(PSTR("i2c scan\n"));
 	}
 }
+
+
+ 

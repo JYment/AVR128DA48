@@ -20,6 +20,8 @@ bool i2cInit(void);
 bool i2cIsInit(void);
 bool i2cBegin(uint8_t ch, uint32_t freq_khz);
 bool i2cStart(uint8_t ch);
+bool i2cSendAddr(uint8_t ch, uint8_t dev_addr);
+bool i2cSendData(uint8_t ch, uint8_t data);
 bool i2cIsBegin(uint8_t ch);
 void i2cReset(uint8_t ch);
 bool i2cIsDeviceReady(uint8_t ch, uint8_t dev_addr);
