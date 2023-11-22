@@ -169,8 +169,6 @@ bool i2cIsDeviceReady(uint8_t ch, uint8_t dev_addr)
 
 bool i2cWriteData(uint8_t ch, uint16_t dev_addr, uint8_t *p_data, uint32_t length, uint32_t timeout)
 {
-	bool ret = false;
-	
 	switch(ch)
 	{
 		case _DEF_I2C1:

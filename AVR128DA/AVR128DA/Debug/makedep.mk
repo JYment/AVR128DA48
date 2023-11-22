@@ -12,6 +12,8 @@ src\hw\driver\cli.c
 
 src\hw\driver\i2c.c
 
+src\hw\driver\lcd\SSD1306.c
+
 src\hw\driver\led.c
 
 src\hw\driver\uart.c

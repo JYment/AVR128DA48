@@ -23,7 +23,7 @@
 //Comment out and edit if there is RST pin
 //#define GLCD_RST				A, 0
 
-#define GLCD_Size         GLCD_128_64
+#define GLCD_Size         GLCD_128_32
 
 //Specify whether error checking while transceiving data via I2C should be done. 
 //#define GLCD_Error_Checking	
@@ -32,11 +32,11 @@
 //Setup TWI peripheral at 400KHz
 #define __I2C_Setup()			TWI_Setup()
 //Transmit START signal
-#define __I2C_Start()			TWI_BeginTransmission()
+#define __I2C_Start()			i2cStart(_DEF_I2C1)
 //Transmit STOP signal
-#define __I2C_Stop()			TWI_EndTransmission()
+#define __I2C_Stop()			i2cEnd(_DEF_I2C1)
 //Transmit DATA
-#define __I2C_Transmit(Data)	TWI_Transmit(Data)
+#define __I2C_Transmit(Data)	i2cSendData(_DEF_I2C1, Data)
 //Receive DATA + Return ACK
 #define __I2C_ReceiveACK()		TWI_ReceiveACK()
 //Receive DATA + Return NACK

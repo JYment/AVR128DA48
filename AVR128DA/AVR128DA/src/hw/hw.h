@@ -17,6 +17,8 @@
 #include "cli.h"
 #include "i2c.h"
 
+#include "SSD1306.h"
+
 
 bool hwInit(void);
 

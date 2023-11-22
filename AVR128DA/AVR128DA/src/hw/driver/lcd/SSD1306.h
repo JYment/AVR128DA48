@@ -14,14 +14,13 @@
 
 //----- Headers ------------//
 #include <inttypes.h>
-#include <util/delay.h>
 #include <string.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <math.h>
 
-#include "IO_Macros.h"
 #include "SSD1306_Settings.h"
-#include "TWI.h"
+#include "i2c.h"
 //--------------------------//
 
 #ifdef __cplusplus

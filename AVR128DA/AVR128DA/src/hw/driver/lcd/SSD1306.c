@@ -104,16 +104,6 @@ void GLCD_Setup(void)
 //	__GLCD.X = __GLCD.Y = __GLCD.Font.Width = __GLCD.Font.Height = __GLCD.Font.Lines = 0;
 }
 
-#if define(GLCD_RST) 
-	void GLCD_Reset(void)
-	{
-		DigitalWrite(GLCD_RST, High);
-		_delay_ms(_GLCD_Delay_1);
-		DigitalWrite(GLCD_RST, Low);
-		_delay_ms(_GLCD_Delay_2);
-		DigitalWrite(GLCD_RST, High);
-	}
-#endif
 
 #if defined(GLCD_Error_Checking)
 	enum GLCD_Status_t GLCD_GetStatus(void)
@@ -227,10 +217,10 @@ void GLCD_SetPixel(const uint8_t X, const uint8_t Y, enum Color_t Color)
 	data = GLCD_BufferRead(__GLCD.X, __GLCD.Y);
 	
 	//Set pixel
-	if (Color == GLCD_Black)
-		BitSet(data, Y % 8);
-	else
-		BitClear(data, Y % 8);
+//	if (Color == GLCD_Black)
+//		BitSet(data, Y % 8);
+//	else
+//		BitClear(data, Y % 8);
 	
 	//Sent data
 	GLCD_BufferWrite(__GLCD.X, __GLCD.Y, data);
@@ -1112,76 +1102,89 @@ void GLCD_PrintDouble(double Value, const uint8_t Precision)
 
 static void GLCD_Send(const uint8_t Control, uint8_t *Data, const uint8_t Length)
 {
-	uint8_t i;
-	#if defined(GLCD_Error_Checking)
-		uint8_t status;
-	#endif
-
-	do
+	
+	uint8_t control = 0x00;
+	i2cStart(_DEF_I2C1);
+	i2cSendAddr(_DEF_I2C1, 0x3C << 1);
+	i2cSendData(_DEF_I2C1, control);
+	
+	for(int i=0; i<Length; i++)
 	{
-		//Transmit START signal
-		__I2C_Start();
-
+		i2cSendData(_DEF_I2C1, *Data);
+		Data++;
+	}
+	i2cEnd(_DEF_I2C1);
+	
+// 	uint8_t i;
+// 	#if defined(GLCD_Error_Checking)
+// 		uint8_t status;
+// 	#endif
+// 
+// 	do
+// 	{
+// 		//Transmit START signal
+// 		__I2C_Start();
+// 
+// // 		#if defined(GLCD_Error_Checking)
+// // 			status = __I2C_Status();
+// // 			
+// // 			if((status != TWI_WIF_bm))
+// // 			if ((status != MT_START_TRANSMITTED) && (status != MT_REP_START_TRANSMITTED))
+// // 			{
+// // 				__GLCD.Status = GLCD_Error;
+// // 				break;
+// // 		}
+// //		#endif
+// 		
+// 
+// 		//Transmit SLA+W
+// 		__I2C_Transmit(__I2C_SLA_W(__GLCD_I2C_Address));
 // 		#if defined(GLCD_Error_Checking)
 // 			status = __I2C_Status();
-// 			
-// 			if((status != TWI_WIF_bm))
-// 			if ((status != MT_START_TRANSMITTED) && (status != MT_REP_START_TRANSMITTED))
+// 			if ((status != MT_SLA_W_TRANSMITTED_ACK) && (status != MT_SLA_W_TRANSMITTED_NACK))
 // 			{
 // 				__GLCD.Status = GLCD_Error;
 // 				break;
+// 			}
+// 		#endif
+// 		
+// 
+// 		//Transmit control byte
+// 		__I2C_Transmit(Control);
+// 		#if defined(GLCD_Error_Checking)
+// 			status = __I2C_Status();
+// 			if ((status != MT_DATA_TRANSMITTED_ACK) && (status != MT_DATA_TRANSMITTED_NACK))
+// 			{
+// 				__GLCD.Status = GLCD_Error;
+// 				break;
+// 			}
+// 		#endif
+// 		
+// 
+// 		for (i = 0 ; i < Length ; i++)
+// 		{
+// 			//Transmit data
+// 			__I2C_Transmit(Data[i]);
+// 			#if defined(GLCD_Error_Checking)
+// 				status = __I2C_Status();
+// 				if ((status != MT_DATA_TRANSMITTED_ACK) && (status != MT_DATA_TRANSMITTED_NACK))
+// 				{
+// 					__GLCD.Status = GLCD_Error;
+// 					break;
+// 				}
+// 			#endif
+// 			
 // 		}
-//		#endif
-		
-
-		//Transmit SLA+W
-		__I2C_Transmit(__I2C_SLA_W(__GLCD_I2C_Address));
-		#if defined(GLCD_Error_Checking)
-			status = __I2C_Status();
-			if ((status != MT_SLA_W_TRANSMITTED_ACK) && (status != MT_SLA_W_TRANSMITTED_NACK))
-			{
-				__GLCD.Status = GLCD_Error;
-				break;
-			}
-		#endif
-		
-
-		//Transmit control byte
-		__I2C_Transmit(Control);
-		#if defined(GLCD_Error_Checking)
-			status = __I2C_Status();
-			if ((status != MT_DATA_TRANSMITTED_ACK) && (status != MT_DATA_TRANSMITTED_NACK))
-			{
-				__GLCD.Status = GLCD_Error;
-				break;
-			}
-		#endif
-		
-
-		for (i = 0 ; i < Length ; i++)
-		{
-			//Transmit data
-			__I2C_Transmit(Data[i]);
-			#if defined(GLCD_Error_Checking)
-				status = __I2C_Status();
-				if ((status != MT_DATA_TRANSMITTED_ACK) && (status != MT_DATA_TRANSMITTED_NACK))
-				{
-					__GLCD.Status = GLCD_Error;
-					break;
-				}
-			#endif
-			
-		}
-
-		#if defined(GLCD_Error_Checking)
-			__GLCD.Status = GLCD_Ok;
-		#endif
-		
-	}
-	while (0);
-	
-	//Transmit STOP signal
-	__I2C_Stop();
+// 
+// 		#if defined(GLCD_Error_Checking)
+// 			__GLCD.Status = GLCD_Ok;
+// 		#endif
+// 		
+// 	}
+// 	while (0);
+// 	
+// 	//Transmit STOP signal
+// 	__I2C_Stop();
 }
 
 static void GLCD_BufferWrite(const uint8_t X, const uint8_t Y, const uint8_t Data)

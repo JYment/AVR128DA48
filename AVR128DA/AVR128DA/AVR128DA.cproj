@@ -104,6 +104,7 @@
       <Value>../src/common/core</Value>
       <Value>../src/common</Value>
       <Value>../src/hw/driver</Value>
+      <Value>../src/hw/driver/lcd</Value>
       <Value>../src/hw</Value>
       <Value>../src/lib</Value>
       <Value>../src</Value>
@@ -166,6 +167,18 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\hw\driver\i2c.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\hw\driver\lcd\Font5x8.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\hw\driver\lcd\SSD1306.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\hw\driver\lcd\SSD1306.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\hw\driver\lcd\SSD1306_Settings.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\hw\driver\led.c">
